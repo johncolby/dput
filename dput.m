@@ -18,7 +18,7 @@ for i=1:nargin
            pastedata{i} = ['reshape({' sprintf('%s ', celldata{:}) '},' '[' num2str(size(vardata)) '])'];
        otherwise
            pastedata{i} = '';
-           warning(sprintf('''%s'' not written. Class ''%s'' not supported.', vars{i}, class(vardata)))
+           warning(sprintf('''%s'' not written. Class ''%s'' not supported.', inputname(i), class(vardata)))
    end
 end
 
