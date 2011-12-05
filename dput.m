@@ -58,10 +58,8 @@ for i=1:nargin
        
        case 'struct'
            fields = fieldnames(vardata);
-           fielddata = cell(length(fields), 1);
-           for ifield=1:length(fields)
-               fielddata{ifield} = dput({vardata.(fields{ifield})});
-           end
+           vardata = mat2cell(squeeze(struct2cell(vardata)), ones(1, length(fields)), length(fields));
+           fielddata = cellfun(@dput, vardata, 'UniformOutput', false);
            fielddata = [fields fielddata]';
            fielddata = ['struct(' sprintf('''%s'',%s,', fielddata{:})];
            pastedata{i} = [fielddata(1:(end-1)) ')'];
