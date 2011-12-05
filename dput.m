@@ -10,7 +10,8 @@ function pastedata = dput(varargin)
 % Inputs:
 % var1, etc. - MATLAB variables. Currently supported classes for variables
 %              (and for individual elements of structs and cells) are:
-%              double, logical, char, struct, cell, int*, uint*.
+%              double (including complex), logical, char, struct, cell,
+%              int*, uint*.
 % precision  - (optional) Name-value pair specifying decimal precision for 
 %              floats (Default: 6) 
 %
@@ -64,8 +65,12 @@ for i=1:nargs
    
    switch class(vardata)
        case 'double'
-           pastedata{i} = ['reshape([' sprintf('%.*f ', [repmat(precision, length(vardata(:)), 1) vardata(:)]') '],' '[' num2str(size(vardata)) '])'];
-       
+           if isreal(vardata)
+               pastedata{i} = ['reshape([' sprintf('%.*f ', [repmat(precision, length(vardata(:)), 1) vardata(:)]') '],' '[' num2str(size(vardata)) '])'];
+           else
+               pastedata{i} = ['reshape([' sprintf('%.*f+%.*fi ', [repmat(precision, length(vardata(:)), 1) vardata(:) repmat(precision, length(vardata(:)), 1) imag(vardata(:))]') '],' '[' num2str(size(vardata)) '])'];
+           end
+           
        case 'char'
            pastedata{i} = ['reshape(''' sprintf('%s', vardata) ''',' '[' num2str(size(vardata)) '])'];
        
