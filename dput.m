@@ -53,10 +53,7 @@ for i=1:nargin
            pastedata{i} = ['reshape(''' sprintf('%s', vardata) ''',' '[' num2str(size(vardata)) '])'];
        
        case 'cell'
-           celldata = cell(length(vardata(:)), 1);
-           for icell=1:length(vardata(:))
-               celldata{icell} = dput(vardata{icell});
-           end
+           celldata = cellfun(@dput, vardata, 'UniformOutput', false);
            pastedata{i} = ['reshape({' sprintf('%s ', celldata{:}) '},' '[' num2str(size(vardata)) '])'];
        
        case 'struct'
