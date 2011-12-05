@@ -21,7 +21,8 @@ function pastedata = dput(varargin)
 % y        = 3;
 % z        = magic(3);
 % mystr    = ['line1'; 'line2'];
-% mystruct = mystruct = struct('index', num2cell(1:3), 'color', {'red', 'blue', 'green'}, 'misc', {'string' 4 num2cell(magic(3))})
+% mystruct = struct('index', num2cell(1:3), 'color', {'red', 'blue',...
+%            'green'}, 'misc', {'string' 4 num2cell(magic(3))});
 % mycell   = {1:3, 'test'; [], 1};
 % dput(x, y, z, mystr, mystruct, mycell)
 %
