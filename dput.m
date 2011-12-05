@@ -10,7 +10,7 @@ function pastedata = dput(varargin)
 % Inputs:
 % var1, etc. - MATLAB variables. Currently supported classes for variables
 %              (and for individual elements of structs and cells) are:
-%              double, char, struct, and cell.
+%              double, logical, char, struct, and cell, int*, uint*.
 %
 % Outputs:
 % pastedata - A paste-able ASCII representation of the input variables.
@@ -24,13 +24,16 @@ function pastedata = dput(varargin)
 % mystruct = struct('index', num2cell(1:3), 'color', {'red', 'blue',...
 %            'green'}, 'misc', {'string' 4 num2cell(magic(3))});
 % mycell   = {1:3, 'test'; [], 1};
-% dput(x, y, z, mystr, mystruct, mycell)
+% mask     = logical(randi([0 1], 3));
+% bigint   = intmax('uint64');
+% dput(x, y, z, mystr, mystruct, mycell, mask, bigint)
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: http://github.com/johncolby/dput
+% See also: CLASS
+%           http://github.com/johncolby/dput
 %           http://stackoverflow.com/questions/8377575/is-there-an-equivalent-of-rs-dput-for-matlab/
 %           http://stat.ethz.ch/R-manual/R-patched/library/base/html/dput.html
 
@@ -64,6 +67,12 @@ for i=1:nargin
            fielddata = ['struct(' sprintf('''%s'',%s,', fielddata{:})];
            pastedata{i} = [fielddata(1:(end-1)) ')'];
        
+       case {'logical', 'int8', 'uint8', 'int16', 'uint16', 'int32', 'uint32' 'int64'}
+           pastedata{i} = [class(vardata) '(reshape([' sprintf('%ld ', vardata) '],' '[' num2str(size(vardata)) ']))'];
+       
+       case 'uint64'
+           pastedata{i} = [class(vardata) '(reshape([' sprintf('%lu ', vardata) '],' '[' num2str(size(vardata)) ']))'];
+           
        otherwise
            pastedata{i} = '[]';
            warning(sprintf('''%s'' not written. Class ''%s'' not supported.', inputname(i), class(vardata)))
