@@ -5,12 +5,14 @@ function pastedata = dput(varargin)
 %forums, email, etc.. This makes it easy to distribute reproducible
 %examples, without having to send along file attachments.
 %
-% Syntax: pastedata = dput(var1 [var2, ...])
+% Syntax: pastedata = dput(var1 [, var2, ...] [, 'precision', precision])
 %
 % Inputs:
 % var1, etc. - MATLAB variables. Currently supported classes for variables
 %              (and for individual elements of structs and cells) are:
-%              double, logical, char, struct, and cell, int*, uint*.
+%              double, logical, char, struct, cell, int*, uint*.
+% precision  - (optional) Name-value pair specifying decimal precision for 
+%              floats (Default: 6) 
 %
 % Outputs:
 % pastedata - A paste-able ASCII representation of the input variables.
@@ -40,17 +42,29 @@ function pastedata = dput(varargin)
 % Author: John Colby (johncolby@ucla.edu)
 % Dec 2011
 
-error(nargchk(1, Inf, nargin))
+nargs = nargin;
+error(nargchk(1, Inf, nargs))
 
-pastedata = cell(nargin, 1);
+% Assign custom precision value (if given and not in recursive mode)
+persistent precision
+if any(strcmp('precision', varargin))
+    ind = find(strcmp('precision', varargin));
+    precision = varargin{ind+1};
+    varargin([ind ind+1]) = [];
+    nargs = nargs - 2;
+elseif isempty(precision)
+    precision = 6;
+end
+
+pastedata = cell(nargs, 1);
 
 % Loop over input variables
-for i=1:nargin
+for i=1:nargs
    vardata = varargin{i};
    
    switch class(vardata)
        case 'double'
-           pastedata{i} = ['reshape([' sprintf('%f ', vardata) '],' '[' num2str(size(vardata)) '])'];
+           pastedata{i} = ['reshape([' sprintf('%.*f ', [repmat(precision, length(vardata(:)), 1) vardata(:)]') '],' '[' num2str(size(vardata)) '])'];
        
        case 'char'
            pastedata{i} = ['reshape(''' sprintf('%s', vardata) ''',' '[' num2str(size(vardata)) '])'];
@@ -79,11 +93,12 @@ for i=1:nargin
    end
 end
 
-varnames = char(arrayfun(@inputname, 1:nargin, 'UniformOutput', false));
+clear precision
+varnames = char(arrayfun(@inputname, 1:nargs, 'UniformOutput', false));
 
 pastedata = char(pastedata);
 
 % If we're finished recursing, make final assignments
 if varnames
-    pastedata = [varnames repmat(' = ', nargin, 1) pastedata repmat(';', nargin, 1)];
+    pastedata = [varnames repmat(' = ', nargs, 1) pastedata repmat(';', nargs, 1)];
 end
