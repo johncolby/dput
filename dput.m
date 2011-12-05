@@ -35,7 +35,7 @@ function pastedata = dput(varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: CLASS
+% See also: CLASS, TEST_DPUT
 %           http://github.com/johncolby/dput
 %           http://stackoverflow.com/questions/8377575/is-there-an-equivalent-of-rs-dput-for-matlab/
 %           http://stat.ethz.ch/R-manual/R-patched/library/base/html/dput.html
